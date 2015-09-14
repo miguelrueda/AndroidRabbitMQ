@@ -1,7 +1,12 @@
 package com.example.android_rabbitmq;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -46,6 +51,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
             e.printStackTrace();
         }
 
+        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String message = (String) intent.getSerializableExtra("message");
+                Log.i(TAG, "onCreate() - Message received: " + message);
+            }
+        };
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter("mqtt-message"));
+
     }
 
     private String createDummyMessage() throws JsonProcessingException {
@@ -58,8 +73,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         echoBody.setResourceKey("123456789");
         echoBody.setResourceStatusKey(26);
 
-        operationRequest.setBody(echoBody);
-        operationRequest.setHeader(echoHeader);
+        operationRequest.setEchoBody(echoBody);
+        operationRequest.setEchoHeader(echoHeader);
         operationRequest.setOperationType(OperationType.CHANGE_STATUS);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -69,7 +84,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     @Override
     protected void onResume() {
-        super.onPause();
+        super.onResume();
         Log.i(TAG, "onResume()");
     }
 
@@ -81,7 +96,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.sendButton){
+        if (v.getId() == R.id.sendButton) {
             Log.i(TAG, "onClick() - " + v.getId());
             responseView.append(" Send message");
         }
