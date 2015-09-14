@@ -12,7 +12,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 public class NotificationService {
 
     private static final String TAG = NotificationService.class.getSimpleName();
-    private String broker = "tcp://localhost:1883";
+    private String broker = "tcp://192.168.8.141:1883";
     private int qos = 0;
     private MqttCallback mqttCallback;
     private Context context;
@@ -30,8 +30,8 @@ public class NotificationService {
             Log.i(TAG, "start()");
             mqttClient = new MqttClient(broker, MqttClient.generateClientId(), memoryPersistence);
             MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
-            mqttConnectOptions.setUserName("user");
-            mqttConnectOptions.setPassword("user".toCharArray());
+            mqttConnectOptions.setUserName("testuser");
+            mqttConnectOptions.setPassword("testuser".toCharArray());
             mqttConnectOptions.setCleanSession(true);
 
             mqttClient.setCallback(mqttCallback);
@@ -40,7 +40,7 @@ public class NotificationService {
                 Log.e(TAG, "start() - Error connecting on notification server:");
                 return;
             }
-            mqttClient.subscribe("amq.topic.*", qos);
+            mqttClient.subscribe("pahoqueue", qos);
             Log.i(TAG, "start() - Connected");
         } catch (MqttException e) {
             Log.e(TAG, "start() - Error while creating mqtt client: " + e.getMessage());
